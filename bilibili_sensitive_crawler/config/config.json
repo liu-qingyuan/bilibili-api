@@ -1,0 +1,73 @@
+{
+    "paths": {
+        "data_dir": "data",
+        "logs_dir": "logs",
+        "metadata_dir": "data/json",
+        "videos_dir": "data/videos",
+        "config_dir": "config"
+    },
+    "login": {
+        "use_cookie": false,
+        "cookie_file": "config/cookies.json",
+        "qrcode_in_terminal": true,
+        "credential_file": "config/credential.json",
+        "verify_timeout": 60,
+        "max_retries": 3,
+        "retry_interval": 5,
+        "check_network": true,
+        "network_timeout": 10,
+        "test_servers": [
+            "api.bilibili.com",
+            "passport.bilibili.com",
+            "www.bilibili.com"
+        ]
+    },
+    "search": {
+        "keywords": [
+            "测试"
+        ],
+        "limit_per_keyword": 100,
+        "page_size": 30,
+        "order_type": "pubdate",
+        "search_type": 0,
+        "duration_type": 0,
+        "tids": 0,
+        "min_duration": 30,
+        "max_duration": 600
+    },
+    "crawler": {
+        "max_retries": 3,
+        "request_interval": 1.5,
+        "random_offset": 0.5,
+        "timeout": 30,
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "info_only": false,
+        "include_comments": false,
+        "include_danmaku": false
+    },
+    "downloader": {
+        "default_quality": 32,
+        "with_audio": true,
+        "concurrent_limit": 3,
+        "retry_times": 3,
+        "timeout": 60,
+        "chunk_size": 1048576,
+        "filename_format": "{bvid}.mp4",
+        "max_size_gb": 800,
+        "max_filename_length": 80
+    },
+    "dataset": {
+        "index_file": "data/json/index.json",
+        "json_filename_format": "{bvid}.json",
+        "video_filename_format": "{bvid}.mp4",
+        "max_videos": 1000,
+        "video_quality": "480p",
+        "creator": "Claude",
+        "description": "哔哩哔哩敏感内容数据集",
+        "version": "0.1.0"
+    },
+    "proxy": {
+        "use_proxy": false,
+        "proxy_url": ""
+    }
+}

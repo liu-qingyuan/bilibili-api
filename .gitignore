@@ -29,3 +29,5 @@ virtualenv/
 # Doc Generater
 .doc_cache/
 .mypy_cache/
+# Crawler Data
+bilibili_sensitive_crawler/data/

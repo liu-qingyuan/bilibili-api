@@ -9,10 +9,22 @@ import tempfile
 import time
 import base64
 import enum
-
 import os
+import sys
+import uuid
+import urllib.parse
+import hashlib
+import asyncio
+import logging
+from pathlib import Path
+
 import qrcode
-import qrcode_terminal
+# 尝试导入qrcode_terminal，如果不存在则忽略
+try:
+    import qrcode_terminal
+    HAS_QRCODE_TERMINAL = True
+except ImportError:
+    HAS_QRCODE_TERMINAL = False
 import yarl
 from typing import Union, List, Dict
 
@@ -444,12 +456,23 @@ class QrCodeLogin:
 
     def get_qrcode_terminal(self) -> str:
         """
-        获取二维码的终端字符串
-
+        获取二维码终端字符串
+        
         Returns:
-            str: 二维码的终端字符串
+            str: 二维码终端字符串
         """
-        return self.__qr_terminal
+        if self.__qr_terminal is not None:
+            return self.__qr_terminal
+        if self.__qr_link is None:
+            raise ApiException("请先调用 get_qrcode_url 方法获取二维码 URL")
+        try:
+            if not HAS_QRCODE_TERMINAL:
+                return f"请安装 qrcode_terminal 模块后再使用此功能，或使用 URL: {self.__qr_link}"
+            self.__qr_terminal = qrcode_terminal.qr_terminal_str(self.__qr_link)
+            return self.__qr_terminal
+        except Exception as e:
+            logging.error(f"生成终端二维码失败: {e}")
+            return f"生成终端二维码失败，请使用 URL: {self.__qr_link}"
 
     async def generate_qrcode(self) -> None:
         """

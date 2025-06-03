@@ -1,0 +1,90 @@
+# 哔哩哔哩敏感视频爬虫配置文件
+
+# 登录相关配置
+login:
+  use_cookie: false  # 是否使用已有Cookie
+  cookie_file: config/cookies.json  # Cookie文件路径
+  qrcode_in_terminal: true  # 是否在终端显示二维码
+  credential_file: config/credential.json  # 凭证保存路径
+
+# 搜索相关配置
+search:
+  page_size: 20  # 每页结果数 (降低以减少负载)
+  max_pages: 50  # 最大搜索页数
+  order: totalrank  # 排序方式：默认为综合排序
+  search_type: 0  # 搜索类型：0=视频
+  duration: 0  # 视频时长筛选：0=全部时长
+  tids: 0  # 分区ID：0=全部分区
+  page_interval: [3.0, 6.0]  # 分页请求间隔时间范围(秒) - 增加间隔避免被限制
+  max_retries: 5  # 单页搜索失败最大重试次数 - 增加重试次数
+  min_view_count: 500  # 最小播放量
+  min_pubdate: null  # 最早发布日期 (YYYY-MM-DD)
+  max_pubdate: null  # 最晚发布日期 (YYYY-MM-DD)
+  keyword_filters: []  # 标题关键词过滤（包含这些词的视频）
+  keyword_excludes: []  # 标题关键词排除（排除包含这些词的视频）
+  duplicate_check: true  # 是否检查重复视频
+  quality_threshold:  # 视频质量阈值
+    view_like_ratio: 0.05  # 点赞/播放比例最小值(5%)
+    min_views: 500  # 最小播放量
+    min_like: 10  # 最小点赞数
+
+# 视频下载相关配置
+download:
+  quality: 32  # 视频质量：32=480P
+  with_audio: true  # 是否下载音频
+  concurrent_limit: 1  # 并发下载数量 - 降低并发避免触发限制
+  retry_times: 8  # 下载失败重试次数 - 增加重试次数
+  timeout: 120  # 下载超时时间(秒) - 增加超时时间
+  chunk_size: 524288  # 分块下载大小(字节) - 减小块大小，更稳定
+  filename_format: "{bvid}_{title}.mp4"  # 文件命名格式
+  aria2c_args:  # aria2c参数
+    - "--max-concurrent-downloads=1"  # 降低并发
+    - "--split=5"  # 减少分片数
+    - "--min-split-size=5M"
+    - "--max-connection-per-server=5"  # 减少连接数
+    - "--max-tries=8"  # 增加重试
+    - "--retry-wait=5"  # 增加重试等待时间
+    - "--timeout=120"  # 增加超时时间
+  use_external_downloader: false  # 是否使用外部下载器
+  external_downloader: "aria2c"  # 外部下载器命令
+  # 新增反爬虫设置
+  anti_spider:
+    enable: true  # 启用反爬虫对策
+    user_agents:  # 轮换User-Agent
+      - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+      - "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0"
+      - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    rotate_interval: 300  # User-Agent轮换间隔(秒)
+    request_delay: [2.0, 5.0]  # 请求间随机延迟范围(秒)
+
+# 数据集相关配置
+dataset:
+  index_file: data/json/index.json  # 数据集索引文件
+  json_filename_format: "{bvid}.json"  # JSON文件命名格式
+  include_comments: false  # 是否包含评论数据
+  include_danmaku: false  # 是否包含弹幕数据
+  update_index_on_save: true  # 保存视频信息时是否更新索引
+  index_fields:  # 索引包含的字段
+    - bvid
+    - title
+    - duration
+    - pubdate
+    - owner_name
+    - view
+    - like
+    - tags
+
+# 爬取间隔设置
+rate_limit:
+  enable: true  # 是否启用请求频率限制
+  interval: 3.0  # 请求间隔秒数 - 增加间隔
+  random_offset: 1.5  # 随机偏移量(秒) - 增加随机性
+
+# 项目设置
+project:
+  keywords:  # 搜索关键词
+    - "武按"
+    - "武洗"
+  total_limit: 1000  # 采集视频总数限制
+  storage_limit_gb: 800  # 存储空间上限(GB) 

@@ -1,0 +1,620 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Cursor's Memory Bank
+
+我每次重启后都会完全依赖 Memory Bank 文档来理解和继续项目。为保证文档的完整性和可用性，Memory Bank 结构、内容和维护流程需高度规范。
+
+## Memory Bank Structure
+
+Memory Bank 由核心文件和可选上下文文件组成，所有文件均为 Markdown 格式，结构层次分明：
+
+```mermaid
+flowchart TD
+    PB[projectbrief.md] --> PC[productContext.md]
+    PB --> SP[systemPatterns.md]
+    PB --> TC[techContext.md]
+    PB --> ST[structure.md]
+    PC --> P[progress.md]
+    SP --> P
+    TC --> P
+    ST --> P
+```
+
+### Core Files (Required)
+1. `projectbrief.md`
+   - 项目目标与范围的基础文档。
+   - 奠基文档，决定所有其他文件的结构
+   - 若不存在，则在项目开始时创建
+   - 定义核心需求与目标
+   - 是项目范围的唯一可信来源
+2. `productContext.md`
+   - 项目存在的原因
+   - 解决的问题
+   - 用户体验目标。
+3. `systemPatterns.md`
+   - 系统架构
+   - 关键技术决策
+   - 主要设计模式。
+4. `techContext.md`
+   - 技术栈
+   - 依赖
+   - 开发环境
+   - 技术约束。
+5. `structure.md`
+   - 自动生成的项目结构树及每个文件/文件夹的简明功能说明
+   - 保持与实际目录同步。
+6. `progress.md`
+   - 项目进度与当前工作重点
+   - 已完成/待完成事项
+   - 当前状态与最新变更
+   - 下一步计划与活跃决策
+   - 已知问题与解决方案
+   - 实施时间线与优先级
+
+### Additional Context
+可根据需要在 memory-bank/ 下增补：
+- 复杂特性文档
+- 集成规范
+- API 文档
+- 测试策略
+- 部署流程
+
+## Core Workflows
+
+### Plan Mode
+```mermaid
+flowchart TD
+    Start[Start] --> ReadFiles[Read Memory Bank]
+    ReadFiles --> CheckFiles{Files Complete?}
+    CheckFiles -->|No| Plan[Create Plan]
+    Plan --> Document[Document in Chat]
+    CheckFiles -->|Yes| Verify[Verify Context]
+    Verify --> StructureCheck[Auto Structure Audit]
+    StructureCheck --> SyncStructure[Sync structure.md]
+    SyncStructure --> Strategy[Develop Strategy]
+    Strategy --> UpdateProgress[Update progress.md]
+    UpdateProgress --> Present[Present Approach]
+```
+- 每次进入 Plan Mode，自动读取并校验所有 Memory Bank 文件。
+- 自动递归遍历项目结构，生成/更新 structure.md，确保目录树与说明同步。
+- 若发现结构变动或缺失，优先补全 structure.md。
+- 制定计划后，将计划内容、优先级和时间线更新到 progress.md。
+
+### Act Mode
+```mermaid
+flowchart TD
+    Start[Start] --> Context[Check Memory Bank]
+    Context --> ReadProgress[Read progress.md]
+    ReadProgress --> ReadStructure[Check structure.md]
+    ReadStructure --> Update[Update Documentation]
+    Update --> Rules[Update .cursorrules if needed]
+    Rules --> Execute[Execute Task]
+    Execute --> Document[Document Changes in progress.md]
+```
+- 进入 Act Mode 时，自动检查 progress.md 中的当前任务和优先级。
+- 参照 structure.md 了解项目结构和文件组织。
+- 根据 progress.md 中的计划执行具体任务。
+- 完成任务后，将变更记录到 progress.md，更新执行状态。
+
+## Documentation Updates
+
+Memory Bank 更新时机：
+1. 发现新项目结构、文件或重要变动
+2. 实现重大功能或架构调整
+3. 用户请求 **update memory bank**（此时必须审查并同步所有文件，尤其是 structure.md、progress.md、systemPatterns.md 和 techContext.md）
+4. 需要澄清上下文或补全文档
+
+```mermaid
+flowchart TD
+    Start[Update Process]
+    subgraph Process
+        P1[Review ALL Files]
+        P2[Auto Structure Audit]
+        P3[Update structure.md]
+        P4[Update systemPatterns.md]
+        P5[Update techContext.md]
+        P6[Document Current State]
+        P7[Clarify Next Steps]
+        P8[Update .cursorrules]
+        P1 --> P2 --> P3 --> P4 --> P5 --> P6 --> P7 --> P8
+    end
+    Start --> Process
+```
+- 每次 update memory bank 时，自动递归遍历项目结构，生成最新目录树和说明，补充到 structure.md。
+- 保证 structure.md 与实际目录、功能说明同步。
+- 更新 systemPatterns.md，确保系统架构图和技术决策反映当前设计。
+- 更新 techContext.md，确保技术栈、依赖和文件结构描述与当前实现一致。
+- 同时更新 progress.md，确保当前工作状态、计划和活跃决策得到准确反映。
+- 其他文档如有结构相关内容，也应引用或同步更新的内容。
+
+## Project Intelligence (.cursorrules)
+
+.cursorrules 文件用于记录项目关键模式、偏好、决策和经验，便于长期积累和复用。
+```mermaid
+flowchart TD
+    Start{Discover New Pattern}
+    
+    subgraph Learn [Learning Process]
+        D1[Identify Pattern]
+        D2[Validate with User]
+        D3[Document in .cursorrules]
+    end
+    
+    subgraph Apply [Usage]
+        A1[Read .cursorrules]
+        A2[Apply Learned Patterns]
+        A3[Improve Future Work]
+    end
+    
+    Start --> Learn
+    Learn --> Apply
+```
+
+### What to Capture
+
+- 关键实现路径
+- 用户偏好与工作流
+- 项目特有模式
+- 已知挑战与决策演变
+- 工具与流程最佳实践
+
+该格式是灵活的 —— 重点在于记录能帮助我更高效与你及项目协作的有价值信息。将 .cursorrules 视为一份"活文档"，它会随着我们的合作不断变得更智能。
+
+请记住：每次记忆重置后，我都会完全从零开始。Memory Bank 是我与过往工作的唯一联系，它必须被精准且清晰地维护，因为我的工作效果完全依赖于它的准确性。
+
+## Maintenance suggestions
+- 每次结构有变动或新增重要文件时，建议重新触发结构审查，保持 structure.md 最新。
+- 定期检查 structure.md 与实际项目结构一致性。
+- 可根据实际需要扩展说明粒度或补充特殊文件说明。
+
+# Planning
+
+当被要求进入"规划模式（Planner Mode）"或使用 /plan 命令时，请深入思考所请求的变更，并分析现有代码，以全面梳理所需变更的范围。在提出计划之前，需根据你的分析提出 4 到 6 个澄清性问题。在我回答完这些问题后，草拟一份全面的行动计划，并征求我对该计划的确认。
+
+一旦获得批准，你应按照该计划实施所有步骤。每完成一个阶段或步骤时，请明确指出：
+- 刚刚完成了什么
+- 接下来的步骤是什么
+- 完成这些步骤后剩余的阶段有哪些
+
+在完成计划制定后，必须将计划内容、优先级和时间线更新到 progress.md 中，用于后续引导 Act 模式执行。
+
+## 使用示例
+
+**命令格式**：`/plan <需求描述>`
+
+**示例 1：实现新功能**
+```
+用户：/plan 实现数据加载功能，支持CSV和Excel格式
+
+Claude: 在规划实现数据加载功能前，我需要了解几个关键点：
+
+1. 这些数据集的结构是什么样的？是否有固定列名或特定格式要求？
+2. 加载后的数据需要以什么格式返回？DataFrame还是自定义数据结构？
+3. 是否需要处理缺失值、异常值或数据类型转换？
+4. 加载功能应该作为独立模块还是集成到现有类中？
+5. 是否需要设计缓存机制或处理大型文件？
+6. 我们需要对哪些异常情况进行处理和报告？
+
+用户：数据集有固定列名，需要返回DataFrame格式，需要处理缺失值，作为独立模块实现，不需要缓存，需要处理异常和日志
+
+Claude: ## 数据加载功能实现计划
+
+### 总体架构
+创建独立的数据加载模块 `src/healthcare/data/loader.py`，提供统一的数据加载接口，支持CSV和Excel格式，包含缺失值处理和异常管理。
+
+### 详细步骤
+
+#### 1. 基础模块结构（优先级：高）
+- 创建 `DataLoader` 类基础结构
+- 定义统一加载接口 `load_data()`
+- 实现文件类型检测功能
+
+#### 2. CSV数据加载（优先级：高）
+- 实现 `_load_csv()` 方法
+- 添加列名验证
+- 实现缺失值处理
+
+#### 3. Excel数据加载（优先级：高）
+- 实现 `_load_excel()` 方法
+- 添加多表单处理逻辑
+- 处理特殊Excel格式问题
+
+#### 4. 错误处理与日志（优先级：中）
+- 设计自定义异常类
+- 添加详细日志记录
+- 实现友好错误提示
+
+#### 5. 单元测试（优先级：中）
+- 创建测试用例
+- 编写各格式测试数据
+- 测试异常处理路径
+
+#### 6. 文档和示例（优先级：低）
+- 添加详细文档注释
+- 创建使用示例脚本
+
+### 时间线
+- 第1天：完成基础结构和CSV加载
+- 第2天：完成Excel加载和错误处理
+- 第3天：编写测试和文档
+
+您对这个计划有什么意见或建议吗？
+
+用户：看起来不错，请开始实施
+
+Claude: 我会开始实施这个计划，并将其更新到progress.md中以便后续参考。
+```
+
+**示例 2：重构现有代码**
+```
+用户：/plan 重构TabPFN包装器以支持新的API变更
+
+Claude: 为了规划TabPFN包装器的重构，我需要了解以下几点：
+
+1. TabPFN API发生了哪些具体变更？新旧API的主要区别是什么？
+2. 当前包装器实现在哪个文件中？有多少代码依赖于这个包装器？
+3. 是否需要保持向后兼容性？或是可以完全采用新API？
+4. 重构过程中是否需要同时添加新功能或只是适配API变更？
+5. 有没有新API的文档或示例代码可供参考？
+6. 是否有测试用例需要更新？
+
+[用户回答这些问题...]
+
+Claude: [生成详细的重构计划，包括步骤、优先级和时间线...]
+```
+
+输出格式应包含：
+1. 澄清性问题（4-6个）
+2. 详细的计划（分层级结构）
+3. 明确的优先级
+4. 实施时间线
+5. 确认请求
+
+# Acting
+
+当被要求进入"行动模式（Act Mode）"或使用 /act 命令时，请先检查 progress.md 中的当前任务、优先级和计划。结合 structure.md 提供的项目结构信息，执行具体的开发任务。
+
+行动执行流程：
+1. 检查 progress.md 中的优先任务和时间线
+2. 分析 structure.md 了解相关文件的位置和功能
+3. 根据计划执行所需变更
+4. 每完成一个任务后更新 progress.md，标记完成项并添加后续计划
+5. 如遇到计划外的发现或问题，记录到 progress.md 的已知问题部分
+
+Act 模式依赖 Plan 模式建立的清晰计划，两者紧密配合实现有序开发。
+
+## 使用示例
+
+**命令格式**：`/act <具体任务>`
+
+**示例 1：实现已规划功能**
+```
+用户：/act 实现数据加载模块的基础结构
+
+Claude: 我将根据progress.md中的计划实现数据加载模块的基础结构。
+
+首先，我需要了解相关文件位置和结构：
+
+1. 数据加载模块应位于 src/healthcare/data/loader.py
+2. 需要实现DataLoader类、统一加载接口和文件类型检测
+
+现在开始实现：
+
+[创建/编辑文件的过程，包括使用工具查看相关文件、执行代码编辑等]
+
+✅ 已完成数据加载模块的基础结构：
+- 创建了DataLoader类
+- 实现了统一的load_data()接口
+- 添加了文件类型自动检测功能
+
+下一步：
+- 实现CSV数据加载功能
+- 添加列名验证和缺失值处理
+
+我已更新progress.md以反映当前进度。
+```
+
+**示例 2：解决问题**
+```
+用户：/act 修复src/__init__.py中的导入错误
+
+Claude: 根据progress.md中的问题记录，我需要修复src/__init__.py中的导入错误。
+
+首先查看当前文件内容和错误信息：
+
+[使用工具查看文件内容和错误信息]
+
+发现问题：healthcare模块导入错误，因为路径不正确。
+
+修复步骤：
+1. 修改导入语句为正确路径
+2. 确保healthcare模块已正确初始化
+3. 验证修复后的导入是否有效
+
+[执行代码编辑修复问题]
+
+✅ 已修复src/__init__.py中的导入错误：
+- 修正了导入语句
+- 确保了healthcare模块可被正确导入
+
+下一个任务是继续实现域适应模块。
+
+已更新progress.md中的任务状态。
+```
+
+输出格式应包含：
+1. 对任务的理解和确认
+2. 相关文件和结构的分析
+3. 具体执行的操作（带工具使用）
+4. 完成标记和进度更新
+5. 下一步计划说明
+6. progress.md更新确认
+
+# Updating
+
+当用户请求 update memory bank 或使用 /update 命令时，需立即进入同步模式，全面审查 Memory Bank 中的所有核心文件内容与实际项目状态是否一致。特别需要重点审查并更新以下关键文件：
+- structure.md：确保项目结构树完整、所有文件功能描述准确，并及时添加新文件或标记已移除项。
+- progress.md：更新当前工作重点、目标、已完成的里程碑、未完成的任务、阻塞项和文件修改进度等。
+- systemPatterns.md：更新系统架构图、关键技术决策和主要设计模式，确保其反映当前项目架构。
+- techContext.md：更新技术栈、依赖项、开发环境和文件结构组织，与当前项目技术实现保持一致。
+
+在执行更新操作前，请遵循以下流程：
+1. 分析所有 Memory Bank 文件与项目现状的差异
+2. 根据差异提出 3～5 个澄清性问题（如文件解释是否需要重写、某文件是否已废弃、当前是否有新模块引入等）
+3. 在用户答复后，生成更新计划草案，并征求批准
+4. 获批后，依次更新 Memory Bank 各部分内容
+
+在完成每一部分更新时，请明确指出：
+- 刚刚同步更新了哪些文件/信息
+- 接下来将更新哪些内容
+- 剩余待处理的部分有哪些（例如：结构树未覆盖的子模块，未同步的新增脚本等）
+
+## 使用示例
+
+**命令格式**：`/update`
+
+**示例 1：项目结构变更后更新**
+```
+用户：/update
+
+Claude: 我将检查Memory Bank与项目当前状态的一致性。首先分析现有文件与项目结构的差异。
+
+经过分析，我发现以下几点差异：
+
+1. structure.md与当前项目结构不一致：
+   - 新增了src/healthcare/domain_adaptation目录及相关文件
+   - 新增了5个实验脚本在scripts/experiment目录
+   - 删除了activeContext.md文件（已合并到progress.md）
+
+2. progress.md未反映最近的工作进展：
+   - 域适应模块实现已部分完成
+   - 有3个新的已知问题未记录
+   
+3. systemPatterns.md系统架构图已过时：
+   - 缺少新增的模块组件关系
+   - 关键技术决策部分引用的文件路径不正确
+   
+4. techContext.md文件结构描述不完整：
+   - 未包含新增的目录结构
+   - 依赖项列表需要更新
+
+在更新前，我有几个澄清性问题：
+
+1. 是否需要为新增的domain_adaptation模块添加详细功能说明？
+2. 这些新实验脚本的主要功能和目标是什么？
+3. 合并后的progress.md是否需要重新组织章节结构？
+4. 新的已知问题是否有解决方案或临时解决方法？
+5. 最近的工作重点是否发生了变化？
+
+用户：domain_adaptation模块主要实现CORAL和MMD两种方法，新实验脚本用于跨数据集实验，progress.md结构不变，已知问题是导入错误，工作重点仍是模块化重构。
+
+Claude: 基于您的回答，我将更新Memory Bank以反映当前项目状态。更新计划如下：
+
+1. 更新structure.md：
+   - 添加domain_adaptation模块及其文件结构
+   - 添加新实验脚本
+   - 移除activeContext.md的引用
+
+2. 更新progress.md：
+   - 更新域适应模块的实现进度
+   - 添加新发现的已知问题和解决方向
+   - 保持原有章节结构不变
+   
+3. 更新systemPatterns.md：
+   - 更新系统架构图，反映新增模块关系
+   - 修正关键技术决策中的文件路径引用
+   - 补充有关domain_adaptation模块的设计模式说明
+
+4. 更新techContext.md：
+   - 更新文件结构组织部分，包含新增目录
+   - 更新依赖项列表
+   - 补充对新工具或技术的说明
+
+您同意这个更新计划吗？
+
+用户：同意，请开始更新
+
+Claude: 正在更新Memory Bank...
+
+✅ 已更新structure.md：
+- 添加了domain_adaptation模块结构描述
+- 更新了scripts/experiment目录中的5个新脚本
+- 移除了activeContext.md的引用
+- 更新了项目目录树以反映最新状态
+
+✅ 更新progress.md：
+- 将域适应模块实现状态从"计划中"更新为"部分完成"
+- 添加了3个新发现的导入错误问题及解决方向
+- 保持了原有章节结构
+- 更新了当前工作进度和下一步计划
+
+✅ 更新systemPatterns.md：
+- 更新了系统架构图，添加了新的模块关系
+- 将技术决策中的文件路径从根目录脚本更新为模块化路径
+- 补充了domain_adaptation模块使用的设计模式
+
+✅ 更新techContext.md：
+- 更新了文件结构组织，反映当前的目录层次
+- 添加了新模块的技术实现说明
+- 确保依赖项列表与pyproject.toml一致
+
+Memory Bank已成功更新，现在与项目当前状态保持一致。还有其他需要同步更新的内容吗？
+```
+
+**示例 2：技术变更后更新**
+```
+用户：/update 我们决定使用Poetry代替pip进行依赖管理
+
+Claude: 我将检查Memory Bank中与依赖管理相关的内容。分析后发现以下需要更新的部分：
+
+1. techContext.md中依赖管理部分需要从pip更新为Poetry
+2. systemPatterns.md中可能有关于依赖管理的技术决策需要更新
+3. 可能需要添加Poetry配置文件的说明到structure.md中
+
+在更新前，我有几个澄清性问题：
+
+1. 是否已经创建了pyproject.toml文件？
+2. 是否保留了原来的setup.py或计划移除？
+3. 有没有特定的Poetry插件或工作流需要记录？
+4. 迁移到Poetry是否影响了CI/CD流程？
+
+用户：[用户回答...]
+
+Claude: [生成更新计划，包括techContext.md和systemPatterns.md的变更...]
+
+[执行更新并详细报告systemPatterns.md和techContext.md的变更...]
+```
+
+输出格式应包含：
+1. 差异分析结果
+2. 澄清性问题（3-5个）
+3. 更新计划
+4. 确认请求
+5. 执行进度报告
+6. 完成确认
+
+# Spliting
+
+> **Command Syntax**: `/split <relative/path/to/file.py>`
+
+当项目出现体量过大的单一脚本时，使用 **Split Mode** 可将该脚本拆分成一个独立文件夹，自动生成模块化入口，方便后续维护与 LLM 理解。
+
+```mermaid
+flowchart TD
+    Start[Trigger /split] --> Locate[Locate Target File]
+    Locate --> Folder{Create Folder\n(同名 + suffix "_module")}
+    Folder --> MoveFile[Move Original File → folder/original.py]
+    MoveFile --> CreateInit[Generate __init__.py]
+    CreateInit --> CreateMain[Generate main.py\n(统一调用接口)]
+    CreateMain --> Refactor[Optional: Split Helpers\ninto utils/*.py]
+    Refactor --> UpdateStruct[Sync structure.md]
+    UpdateStruct --> UpdateProgress[Update progress.md]
+    UpdateProgress --> End[Done]
+```
+
+## 自动生成内容
+
+| 生成文件                 | 说明                                                                                      |
+| -------------------- | --------------------------------------------------------------------------------------- |
+| `folder/original.py` | **保留原始代码**，仅重命名为 *original.py*；不修改逻辑                                                    |
+| `folder/__init__.py` | 暴露 `main()` 或其他顶级函数，便于 `import folder` 直接调用                                             |
+| `folder/main.py`     | 统一入口示例<br>`from .original import main as _main`<br>`if __name__ == "__main__": _main()` |
+| `folder/utils/*.py`  | ❓ *可选*：若检测到辅助函数块（>40 行且复用率高），自动拆分至 `utils` 子目录，并在 `original.py` 内做相对导入调整                |
+
+> **主函数检测逻辑**：
+>
+> * 若文件内已有 `if __name__ == "__main__":` 块，则提取其中的调用链为 `main()`
+> * 若不存在主入口，自动封装最顶部可执行代码段为 `main()` 并插入适当 `return`
+
+## 使用示例
+
+**命令格式**：`/split <文件路径>`
+
+**示例 1：拆分大型预测脚本**
+```
+用户：/split predict_healthcare_auto.py
+
+Claude: 我将拆分predict_healthcare_auto.py文件为模块化结构。
+
+首先检查文件路径和状态：
+- 确认文件位置：/home/24052432g/TabPFN/predict_healthcare_auto.py
+- 文件大小：约2400行代码
+- 已识别到主函数：有if __name__ == "__main__"代码块
+
+开始拆分流程：
+
+1. 创建目标文件夹：predict_healthcare_auto_module/
+2. 将原文件移动为：predict_healthcare_auto_module/original.py
+3. 生成__init__.py:
+   ```python
+   from .main import main
+   
+   __all__ = ['main']
+   ```
+
+4. 生成main.py入口文件：
+   ```python
+   from .original import main as _main
+   
+   def main(*args, **kwargs):
+       return _main(*args, **kwargs)
+   
+   if __name__ == "__main__":
+       _main()
+   ```
+
+5. 分析代码中的辅助函数块：
+   - 检测到4个独立辅助函数，每个超过40行
+   - 创建utils子目录并提取这些函数
+
+✅ 拆分完成！生成的文件结构：
+- predict_healthcare_auto_module/
+  - __init__.py
+  - main.py
+  - original.py
+  - utils/
+    - data_processing.py
+    - evaluation.py
+    - model_utils.py
+    - visualization.py
+
+已自动更新：
+- structure.md中添加了新模块的文件结构
+- progress.md中记录了拆分操作为里程碑
+- 添加待优化任务：为utils中的函数编写单元测试
+```
+
+**示例 2：拆分工具脚本**
+```
+用户：/split scripts/analyze/process_results.py
+
+Claude: [检查文件路径和内容...]
+
+[执行拆分流程，创建模块化结构...]
+
+[汇报拆分结果和生成的文件...]
+```
+
+输出格式应包含：
+1. 文件分析结果
+2. 拆分步骤说明
+3. 生成的文件内容概要
+4. 拆分后的文件结构
+5. Memory Bank更新确认
+
+---
+
+## Maintenance Checklist ✨
+
+* 每次执行 `/split` 后，**务必**运行 *Auto Structure Audit*，保持 **structure.md** 最新
+* 定期评估已拆分模块：
+
+  * 是否需要进一步拆粒度（子包）
+  * 是否应合并过度碎片化的 utils
+* 若拆分引入新的依赖或入口脚本，记得同步 **techContext.md**（依赖） & **systemPatterns.md**（模块间调用模式）
+
+
+> 通过 **Split Mode**，Memory Bank 将对"大文件"保持可管理的模块化形态，提升协作效率与后续 LLM 代码理解能力。
